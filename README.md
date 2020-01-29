@@ -50,6 +50,8 @@ Tested on: Ubuntu 19.10 / Apache2 / PHP 7.3
     cd axl-php-samples
     ```
 
+* Install the Composer PHP package manager ([see instructions](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos))
+
 * Install PHP dependencies:
 
     ```shell
