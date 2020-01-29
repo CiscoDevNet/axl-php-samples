@@ -26,7 +26,7 @@ Tested on: Ubuntu 19.10 / Apache2 / PHP 7.3
     ```shell
     sudo apt install php libapache2-mod-php
 
-* Install PHP 
+* Install PHP SOAP
     
     ```shell
     sudo apt install php-soap
@@ -47,6 +47,7 @@ Tested on: Ubuntu 19.10 / Apache2 / PHP 7.3
 
     ```shell
     git clone https://github.com/CiscoDevNet/axl-php-samples.git
+    
     cd axl-php-samples
     ```
 
