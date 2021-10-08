@@ -6,14 +6,21 @@ A set of small sample scripts demonstrating how to use the CUCM AXL APIs for rea
 
 [https://developer.cisco.com/site/axl/](https://developer.cisco.com/site/axl/)
 
+Tested on:
+* Ubuntu 21.04
+* Apache2 2.4.46
+* PHP 7.4.16
+
+
 ## Available samples
 
 * `add_update_Css.php` - AXL `<addCss>` sample script to add a Calling Search Space, then
 update it using an `<addMembers>` list ( `<addRoutePartition>`, `<addCss>`, `<updateCss>` )
 
-## Getting started
+* `add_update_Phone.php1` - Adds a new phone and associated line, then updates it using `<addLines>` 
+to add a second line (`<addLine>`, `<addPhone>`, `<updatePhone>`)
 
-Tested on: Ubuntu 19.10 / Apache2 / PHP 7.3
+## Getting started
 
 * Install Apache2:
 
@@ -59,7 +66,7 @@ Tested on: Ubuntu 19.10 / Apache2 / PHP 7.3
     composer install
     ```
 
-* The AXL v12.5 WSDL files are included in this project.  If you'd like to use a different version, replace with the AXL WSDL files for your CUCM version:
+* The AXL v14 WSDL files are included in this project.  If you'd like to use a different version, replace with the AXL WSDL files for your CUCM version:
 
     1. From the CUCM Administration UI, download the 'Cisco AXL Tookit' from **Applications** / **Plugins**
 
@@ -96,6 +103,8 @@ Tested on: Ubuntu 19.10 / Apache2 / PHP 7.3
 * Finally, open the URL corresponding to the desired sample in your browser, e.g.: http://localhost/axl-php-samples/add_update_Css.php
 
 ## Hints
+
+* **Debugging** set `DEBUG=True` in `.env` to enable detailed debug output of AXL HTTP/XML requests/responses.
 
 * **HTTPS certificate checking** For production, see the comments in each sample script file to enable HTTPS certificate authority validity and name checking.  You can retrieve the cert `.pem` file by browsing to the CUCM admin page, and viewing/exporting the chain CA certificate, usually by clicking the 'lock' icon at the front of the URL bar
 

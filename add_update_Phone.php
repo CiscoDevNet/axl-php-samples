@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <?php
-/* AXL <addCss> sample script to add a Calling Search Space, then
-update it using an <addMembers> list.
+/* AXL <add/updatePhone> sample script to add a phone and associate line, then
+update it using an <addLines> list.
 
 See the 'Hints' section in README.md for a discussion of how this sample
 addresses xsd:choice elements.
 
-Copyright (c) 2018 Cisco and/or its affiliates.
+Copyright (c) 2021 Cisco and/or its affiliates.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -111,11 +111,15 @@ $client = new SoapClient(
     )
 );
 
-// Create a Route Partition named 'testPartition1'
+// Create a new test Line
 try {
-    $resp = $client -> addRoutePartition(
-        array( "routePartition" => 
-            array( "name" => "testPartition1" )
+    $resp = $client -> addLine(
+        array( "line" =>
+            array(
+                "pattern" => "1234567890" ,
+                "usage" => "Device",
+                "routePartition" => null
+            )
         )
     );
 } catch (Exception $e) {
@@ -123,13 +127,40 @@ try {
 }
 
 printDebug();
-echo '<b>testPartition1 created!</b><br>';
+echo '<b>test line 1234567890 created!</b><br>';
 
-// Create a second Route Partition named 'testPartition2'
+// Create a new test Phone, associating the test Line
 try {
-    $resp = $client -> addRoutePartition(
-        array( "routePartition" => 
-            array( "name" => "testPartition2" )
+    $resp = $client -> addPhone(
+        array( "phone" =>
+            array(
+                "name" => "CSFTESTPHONE",
+                "product" => "Cisco Unified Client Services Framework",
+                "model" => "Cisco Unified Client Services Framework",
+                "class" => "Phone",
+                "protocol" => "SIP",
+                "protocolSide" => "User",
+                "devicePoolName" => "Default",
+                "locationName" => "Hub_None",
+                "sipProfileName" => "Standard SIP Profile",
+                "lines" => array(
+                    "line" => array(
+                        "index" => "1",
+                        "dirn" => array(
+                            "pattern" => "1234567890",
+                            "routePartition" => null
+                        )
+                    )
+                ),
+                "commonPhoneConfigName" => null,
+                "phoneTemplateName" => null,
+                "primaryPhoneName" => null,
+                "useTrustedRelayPoint" => null,
+                "builtInBridgeStatus" => null,
+                "packetCaptureMode" => null,
+                "certificateOperation" => null,
+                "deviceMobilityMode" => null
+            )
         )
     );
 } catch (Exception $e) {
@@ -137,95 +168,98 @@ try {
 }
 
 printDebug();
-echo '<b>testPartition2 created!</b><br>';
+echo '<b>test Phone created!</b><br>';
 
-// Create a Call Search space
+// Create a second test Line
+try {
+    $resp = $client -> addLine(
+        array( "line" =>
+            array(
+                "pattern" => "9876543210" ,
+                "usage" => "Device",
+                "routePartition" => null
+            )
+        )
+    );
+} catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+}
 
-// Create a custom class for a CSS object with only 
-// a <members> element
-class css_using_members {
-    public $members;
+printDebug();
+echo '<b>test Line 9876543210 created!</b><br>';
+
+// Create a custom class for a updatePhone object using
+// the <addLines> choice option
+
+class updatePhone_using_addLines {
     public $name;
+    public $addLines;
 }
 
 // Instantiate an object of the custom class
-$css = new css_using_members;
-$css -> name = 'testCss';
+$updatePhoneObj = new updatePhone_using_addLines;
+$updatePhoneObj -> name = 'CSFTESTPHONE';
 
-// We can set members as an array in the usual SoapClient way
-$css -> members = array(
-    "member" => array(
-        "routePartitionName" => "testPartition1",
-        "index" => 1
+// We can set addLines as an array in the usual SoapClient way
+$updatePhoneObj -> addLines = array(
+    "line" => array(
+        "index" => "2",
+        "dirn" => array(
+            "pattern" => "9876543210",
+            "routePartitionName" => null
+        )
     )
-);
+ );
 
+// Execute the updatePhone request
 try {
-    // Create Calling Search Space named 'testCss' with one partition
-    $resp = $client -> addCss(
-        array( "css" => $css )
-    );  
+    $resp = $client -> updatePhone( $updatePhoneObj );
 } catch (Exception $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";
 }
 
 printDebug();
-echo '<b>testCss created!</b><br>';
+echo '<b>test Phone updated!</b><br>';
 
-// Update the Calling Search space
-
-// Create a custom class for a CSS object with only 
-// an <addMembers> element
-class css_using_addMembers {
-    public $addMembers;
-    public $name;
-}
-
-$updateCss = new css_using_addMembers;
-$updateCss -> name = 'testCss';
-
-$updateCss -> addMembers = array( "member" => array(
-    "routePartitionName" => "testPartition2",
-    "index" => 2
-));
-
-try {
-    // Update Calling Search Space with <addMembers>
-    $resp = $client -> updateCss( $updateCss );
-} catch (Exception $e) {
-    echo 'Caught exception: ',  $e->getMessage(), "\n";
-}
-
-printDebug();
-echo '<b>testPartition1 updated!</b><br>';
 
 // Delete the objects we just created
 
 try {
-    $resp = $client -> removeCss( array( 'name' => 'testCss' ) );
+    $resp = $client -> removePhone( array( 'name' => 'CSFTESTPHONE' ) );
 } catch (Exception $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";
 }
 
 printDebug();
-echo '<b>testCss deleted!</b><br>';
+echo '<b>test Phone deleted!</b><br>';
 
 try {
-    $resp = $client -> removeRoutePartition( array( 'name' => 'testPartition1' ) );
+    $resp = $client -> removeLine(
+        array(
+            "pattern" => "1234567890",
+            "routePartition" => null
+        )
+    );
 } catch (Exception $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";
 }
 
 printDebug();
-echo '<b>testPartition1 deleted!</b><br>';
+echo '<b>test Line 1234567890 deleted!</b><br>';
 
 try {
-    $resp = $client -> removeRoutePartition( array( 'name' => 'testPartition2' ) );
+    $resp = $client -> removeLine(
+        array(
+            "pattern" => "9876543210",
+            "routePartition" => null
+        )
+    );
 } catch (Exception $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";
 }
 
 printDebug();
-echo '<b>testPartition2 deleted!</b><br>';
+echo '<b>test Line 9876543210 deleted!</b><br>';
+
 ?>
 <html>
